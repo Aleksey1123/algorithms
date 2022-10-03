@@ -75,6 +75,8 @@ class AStar
 public:
     Result find_path(Node start, Node goal, Map grid, string metrictype="Octile", int connections=8, double hweight=1)
     {
+        //TODO - implement the main cycle of AStar algorithm
+
         auto time_now = std::chrono::high_resolution_clock::now();
         Result result;
         bool flag = false;
@@ -109,7 +111,10 @@ public:
                     for(auto iter = OPEN.begin(); iter!=OPEN.end(); ++iter)
                     {
                         if (compare_coord_of_nodes(*iter, n)) {
-                            if (n.g > (*iter).g) {
+                            if (n.g < (*iter).g) {
+                                iter->g = n.g;
+                                iter->f = n.f;
+                                iter->parent = n.parent;
                                 flag = true;
                                 break;
                             }
@@ -120,15 +125,14 @@ public:
                         continue;
                     }
                     OPEN.push_back(n);
-                    if (n == goal) {
-                        result.path = reconstruct_path(n);
-                        result.cost = n.g;
-                        pathfound = true;
-                        break;
-                    }
                 }
             }
             OPEN.sort(compare_f_value_of_nodes);
+            if (current == goal) {
+                result.path = reconstruct_path(current);
+                result.cost = current.g;
+                pathfound = true;
+            }
         }
         result.steps = steps;
         result.nodes_created = CLOSED.size();
@@ -138,6 +142,7 @@ public:
 
     double count_h_value(Node current, Node goal, std::string metrictype="Octile")
     {
+        //TODO - add support of all three metrics
         if (metrictype == "Octile") {
             double di = abs(current.i - goal.i);
             double dj = abs(current.j - goal.j);
@@ -155,6 +160,7 @@ public:
 
     std::list<Node> reconstruct_path(Node n)
     {
+        //TODO - reconstruct path using back pointers
 
         std::list<Node> path;
         while(n.parent != nullptr)
